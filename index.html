@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#111111" />
+    <title>Master System</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <main>
+      <div class="screen-frame">
+        <canvas id="screen" width="256" height="192" tabindex="0" aria-label="Master System screen"></canvas>
+        <p class="paused-label">Paused</p>
+        <p class="empty-label">Insert a cartridge to switch on</p>
+      </div>
+
+      <section id="toolbar" class="toolbar" aria-label="Console">
+        <span class="toolbar-group">
+          <button type="button" data-action="pause" title="P or the Pause key">Pause</button>
+          <button
+            type="button"
+            data-action="reset"
+            title="The console's Reset button: games that use it restart (on a Game Gear, the console restarts)"
+          >
+            Reset
+          </button>
+          <button type="button" data-action="power" title="Switch the console off and on again">Power cycle</button>
+          <button type="button" data-action="fullscreen" title="Esc leaves full screen">Full screen</button>
+        </span>
+        <span class="toolbar-group">
+          <select name="system" aria-label="Console" title="Auto goes by the cartridge's header and file name">
+            <option value="auto" selected>Console: Auto</option>
+            <option value="sms">Master System</option>
+            <option value="gg">Game Gear</option>
+          </select>
+          <select name="region" aria-label="Region" title="Auto goes by the cartridge's header and file name">
+            <option value="auto" selected>Region: Auto</option>
+            <option value="export">Export (USA, Europe)</option>
+            <option value="japan">Japan</option>
+          </select>
+          <select name="tv" aria-label="TV system" title="Auto goes by the file name: European releases are PAL">
+            <option value="auto" selected>TV: Auto</option>
+            <option value="ntsc">NTSC (60 Hz)</option>
+            <option value="pal">PAL (50 Hz)</option>
+          </select>
+          <select
+            name="fm"
+            aria-label="FM sound"
+            title="The FM sound chip of Japanese Master Systems. Auto fits it for Japanese games; games that find it play FM music."
+          >
+            <option value="auto" selected>FM sound: Auto</option>
+            <option value="on">FM sound: On</option>
+            <option value="off">FM sound: Off</option>
+          </select>
+        </span>
+        <span class="toolbar-group">
+          <button type="button" data-action="save-state" title="Save the whole console, to come back to later">
+            Save state
+          </button>
+          <select name="state-slot" aria-label="Save states"></select>
+          <button type="button" data-action="load-state">Load</button>
+          <button type="button" data-action="delete-state">Delete</button>
+          <button type="button" data-action="export-state" title="Download the current state as a file">Export</button>
+          <button type="button" data-action="import-state">Import...</button>
+        </span>
+        <span class="toolbar-message" role="status"></span>
+        <input type="file" name="state-file" accept=".smsstate" hidden />
+      </section>
+
+      <section id="cart-panel" class="cart-panel" data-state="empty" aria-label="Cartridge slot">
+        <div class="cart-empty">
+          <p class="cart-title">Drop a .sms, .gg or .zip cartridge image here</p>
+          <button type="button" data-action="choose">Choose file...</button>
+        </div>
+        <div class="cart-loaded">
+          <p class="cart-title"><span class="cart-name"></span> <span class="cart-file"></span></p>
+          <p class="cart-details"></p>
+          <div class="cart-actions">
+            <button type="button" data-action="choose">Change cartridge</button>
+            <button type="button" data-action="eject">Eject</button>
+            <label title="How the cartridge switches its ROM banks; Auto goes by its size and header">
+              Mapper
+              <select name="mapper"></select>
+            </label>
+            <span class="battery-actions" hidden>
+              <button type="button" data-action="export-save" title="The game's own save (its battery-backed RAM)">
+                Download .sav
+              </button>
+              <span class="battery-hint">or drop a .sav file to use one</span>
+            </span>
+          </div>
+        </div>
+        <p class="zip-files" hidden>In this zip: <span class="zip-buttons"></span></p>
+        <div class="bundled-games" hidden>
+          <p class="bundled-games-row">
+            Free games:
+            <select name="bundled-game" aria-label="Free games"></select>
+            <button type="button" data-action="play-game">Play</button>
+          </p>
+          <p class="game-info"></p>
+        </div>
+        <p class="cart-drop-hint">Release to insert</p>
+        <p class="cart-message" role="status"></p>
+        <input type="file" name="cart-file" accept=".sms,.gg,.sg,.sc,.bin,.rom,.zip,.smsstate,.sav" hidden />
+      </section>
+
+      <section id="controls" class="controls" aria-label="Controllers">
+        <div class="controls-row">
+          <label><input type="checkbox" name="show-pad" /> On-screen controller</label>
+          <label>
+            for
+            <select name="pad-player" aria-label="Which controller the on-screen controller presses">
+              <option value="0" selected>Player 1</option>
+              <option value="1">Player 2</option>
+            </select>
+          </label>
+          <label title="The leftmost 8 pixels, where many scrolling games leave junk">
+            <input type="checkbox" name="crop-left" /> Hide left column
+          </label>
+          <label><input type="checkbox" name="sound" checked /> Sound</label>
+          <label>
+            Volume
+            <input type="range" name="volume" min="0" max="1" step="0.05" value="0.8" />
+          </label>
+          <span class="sound-hint" hidden>Click or press a key to start sound</span>
+        </div>
+        <div id="pad" class="pad" hidden>
+          <div class="pad-dpad" role="group" aria-label="D-pad"></div>
+          <div class="pad-middle">
+            <button type="button" data-button="Start" title="The console's Pause button, or the Game Gear's Start">
+              Pause / Start
+            </button>
+          </div>
+          <div class="pad-face">
+            <button type="button" data-button="One">1</button>
+            <button type="button" data-button="Two">2</button>
+          </div>
+        </div>
+        <p class="gamepad-status" aria-live="polite"></p>
+        <p class="controls-hint">
+          Keyboard (player 1): arrow keys for the D-pad, Z for button 1, X for button 2, and Enter for Pause (Start on a
+          Game Gear). Gamepads work as soon as you press a button; the first is player 1, the second player 2. The
+          bottom face button is 1, the right one 2, and Start is Pause.
+        </p>
+      </section>
+
+      <p id="status">Starting...</p>
+      <nav class="emulator-links" aria-label="Emulators">
+        Emulators:
+        <a href="https://mohrt.github.io/sz81/">Timex Sinclair 1000</a>
+        <a href="https://mohrt.github.io/c64/">Commodore 64</a>
+        <a href="https://mohrt.github.io/atari2600/">Atari 2600</a>
+        <a href="https://mohrt.github.io/colecovision/">ColecoVision</a>
+        <a href="https://mohrt.github.io/nes/">NES</a>
+        <strong aria-current="page">Master System</strong>
+      </nav>
+      <footer class="site-links">
+        <a href="https://mohrt.com/">mohrt.com</a>
+        <a href="https://github.com/mohrt/mastersystem" target="_blank" rel="noopener">Source on GitHub</a>
+        <a href="https://x.com/mohrt" target="_blank" rel="noopener">@mohrt on X</a>
+      </footer>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

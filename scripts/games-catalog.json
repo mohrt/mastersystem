@@ -1,0 +1,59 @@
+{
+  "games": [
+    {
+      "title": "Ninja Girl",
+      "file": "ninja-girl.sms",
+      "url": "https://raw.githubusercontent.com/pw32x/ninjagirl/aa93ba8567debd94a427ed16c25cd55880b18f81/dailyversions/NinjaGirl-2026-7-20.sms",
+      "sha256": "4cc085b5ab23b7aa55ef3c665aa82cde8a99fe9c7d80525bd1234ea7b9a2b68c",
+      "credit": "pw32x",
+      "license": "MIT",
+      "licenseFile": "https://raw.githubusercontent.com/pw32x/ninjagirl/aa93ba8567debd94a427ed16c25cd55880b18f81/LICENSE",
+      "sourceUrl": "https://github.com/pw32x/ninjagirl",
+      "hint": "A side-scrolling platformer, still being made (a daily build)."
+    },
+    {
+      "title": "Skyhaul",
+      "file": "skyhaul.sms",
+      "url": "https://raw.githubusercontent.com/haroldo-ok/skyhaul-sms/94483a95ac3a34b67e246290354605bc8330319a/skyhaul.sms",
+      "sha256": "86760df5366cb36986097ce5ac1825d4c2cb7e3798fafcff291e5cd7402462e9",
+      "credit": "haroldo-ok, after ABA Games' Skyhaul",
+      "license": "MIT",
+      "licenseFile": "https://raw.githubusercontent.com/haroldo-ok/skyhaul-sms/94483a95ac3a34b67e246290354605bc8330319a/LICENSE",
+      "sourceUrl": "https://github.com/haroldo-ok/skyhaul-sms",
+      "hint": "An arcade shooter: fly the ship and keep your landers safe."
+    },
+    {
+      "title": "Open Sosaria",
+      "file": "open-sosaria.sms",
+      "url": "https://raw.githubusercontent.com/haroldo-ok/opensosaria-sms/2229c339ae4b63c7caab3c6c46abae4bc2b1e2b2/opensosaria.sms",
+      "sha256": "fb99f4476e25521b1cb70fa80fe46a7561020556947eecae56707c7fc091db4d",
+      "credit": "haroldo-ok, from delcodigo's open-sosaria",
+      "license": "MIT",
+      "licenseFile": "https://raw.githubusercontent.com/haroldo-ok/opensosaria-sms/2229c339ae4b63c7caab3c6c46abae4bc2b1e2b2/LICENSE",
+      "sourceUrl": "https://github.com/haroldo-ok/opensosaria-sms",
+      "hint": "A remake of Ultima I, still being made."
+    },
+    {
+      "title": "The Floating Dutchman",
+      "file": "floating-dutchman.sms",
+      "url": "https://raw.githubusercontent.com/haroldo-ok/floating-dutchman-sms/202a9316401978e9ca77c5c50aeea84b60ec2b63/TheFloatingDutchman.sms",
+      "sha256": "43013ab8a40a7661603084383c30788d09ef3d76666bbbcd70c73fe7c614db75",
+      "credit": "haroldo-ok, from Eddie Ferro and contributors' game",
+      "license": "GNU GPL v3",
+      "licenseFile": "https://raw.githubusercontent.com/haroldo-ok/floating-dutchman-sms/202a9316401978e9ca77c5c50aeea84b60ec2b63/COPYING",
+      "sourceUrl": "https://github.com/haroldo-ok/floating-dutchman-sms",
+      "hint": "A space shooter: clear each room of foes to unlock the star chart."
+    },
+    {
+      "title": "Tunnel (Game Gear)",
+      "file": "tunnel.gg",
+      "url": "https://github.com/liamhays/tunnel/releases/download/v1.0/tunnel.gg",
+      "sha256": "becd29c22054b670f78aaed8e7c168c2388bea01d719e041ee77e0f2ff09cb73",
+      "credit": "liamhays",
+      "license": "GNU GPL v3",
+      "licenseFile": "https://raw.githubusercontent.com/liamhays/tunnel/79c0c21dffbed69c8be0acbebf70a1cbb36cadaa/LICENSE",
+      "sourceUrl": "https://github.com/liamhays/tunnel",
+      "hint": "A small arcade game for the Game Gear. Enter is Start."
+    }
+  ]
+}
