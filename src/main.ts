@@ -8,6 +8,7 @@ import { GamepadManager, padName, readGamepad } from './io/gamepad-input';
 import { KeyboardInput } from './io/keyboard-input';
 import { Screen } from './render/screen';
 import { BatterySaves, batteryKey } from './storage/battery-saves';
+import { BIOS_NAMES, BiosStore, biosKind, looksLikeBios, type BiosKind } from './storage/bios-store';
 import { SaveStates, decodeSession, encodeSession, type SaveStateRecord, type Session } from './storage/save-states';
 import { memoryStores, openBrowserStores, type KeyValueStore } from './storage/store';
 import { CartPanel } from './ui/cart-panel';
@@ -17,7 +18,7 @@ import { attachToolbar, type ConsoleChoices } from './ui/toolbar';
 import { OnScreenPad } from './ui/touch-pad';
 
 /** Form fields whose values are remembered between visits. */
-const REMEMBERED_SETTINGS = ['system', 'region', 'tv', 'fm', 'show-pad', 'pad-player', 'crop-left', 'sound', 'volume'];
+const REMEMBERED_SETTINGS = ['system', 'region', 'tv', 'fm', 'use-bios', 'show-pad', 'pad-player', 'crop-left', 'sound', 'volume'];
 
 /** Longest gap the loop catches up on, so a backgrounded tab doesn't run a burst of frames. */
 const MAX_FRAME_MS = 100;
@@ -70,6 +71,13 @@ function setupFor(choices: ConsoleChoices, info: RomInfo | null): ConsoleSetup {
   return { system, region, tv, fm };
 }
 
+/** The BIOS images kept, e.g. "Master System BIOS (8K) and Game Gear BIOS (1K)", or null for none. */
+function describeBios(images: Partial<Record<BiosKind, Uint8Array>>): string | null {
+  const kept = (Object.keys(BIOS_NAMES) as BiosKind[]).filter((kind) => images[kind]);
+  if (kept.length === 0) return null;
+  return kept.map((kind) => `${BIOS_NAMES[kind]} (${sizeLabel(images[kind]!.length)})`).join(' and ');
+}
+
 /** One line about the cartridge, e.g. "256K · Sega mapper · Game Gear · Japanese". */
 function describe(cart: CurrentCartridge): string {
   const { info } = cart;
@@ -109,6 +117,8 @@ async function main(): Promise<void> {
     });
     const saveStates = new SaveStates(stores.saveStates as KeyValueStore<SaveStateRecord>);
     const batterySaves = new BatterySaves(stores.battery as KeyValueStore<Uint8Array>);
+    const biosStore = new BiosStore(stores.bios as KeyValueStore<Uint8Array>);
+    let biosImages: Partial<Record<BiosKind, Uint8Array>> = await biosStore.load().catch(() => ({}));
 
     let current: CurrentCartridge | null = null;
     let bundledGames: BundledGame[] = [];
@@ -119,8 +129,38 @@ async function main(): Promise<void> {
       const parts = [current ? current.title : 'No cartridge', SYSTEM_NAMES[machine.system]];
       parts.push(machine.tv.toUpperCase(), machine.region === 'japan' ? 'Japan' : 'Export');
       if (machine.fmPresent) parts.push('FM');
+      if (machine.hasBios) parts.push('BIOS');
       status.textContent = `${parts.join(' · ')} · Arrows, Z, X and Enter play`;
-      screenFrame.classList.toggle('empty', current === null);
+      screenFrame.classList.toggle('empty', !machine.canRun);
+    };
+
+    /** Switches the console off and on, e.g. after its setup or BIOS changed. */
+    const powerCycle = () => {
+      machine.powerOn();
+      emulator.resetTiming();
+      audio?.flush();
+      updateStatus();
+    };
+
+    // --- BIOS ------------------------------------------------------------------------
+    const useBios = requireElement<HTMLInputElement>('input[name="use-bios"]');
+    const applyBios = () => {
+      const on = useBios.checked;
+      machine.setBios(on ? (biosImages.sms ?? null) : null, on ? (biosImages.gg ?? null) : null);
+      cartPanel.showBios(describeBios(biosImages));
+    };
+    useBios.addEventListener('change', () => {
+      applyBios();
+      powerCycle();
+      focusScreen();
+    });
+    const useBiosImage = async (bytes: Uint8Array) => {
+      const kind = biosKind(bytes);
+      await biosStore.save(kind, bytes);
+      biosImages = { ...biosImages, [kind]: bytes };
+      useBios.checked = true;
+      useBios.dispatchEvent(new Event('change'));
+      cartPanel.showMessage(`${BIOS_NAMES[kind]} kept in this browser; the console was switched off and on to use it.`, true);
     };
 
     /** Sets the console up for the current cartridge and the toolbar's choices. */
@@ -254,6 +294,10 @@ async function main(): Promise<void> {
           await useBatteryFile(media.bytes);
           return;
         }
+        if (looksLikeBios(chosen.name)) {
+          await useBiosImage(media.image);
+          return;
+        }
         const game = bundledGames.find((entry) => entry.file.split('/').pop() === chosen.name);
         await insertImage(media.image, fromZip ? `${chosen.name} from ${file.name}` : chosen.name, game?.title);
       },
@@ -275,6 +319,16 @@ async function main(): Promise<void> {
           cartPanel.showCartridge(current.title, current.fileName, describe(current), current.cartridge.saveData !== null);
           audio?.flush();
         })();
+      },
+      onBiosFile: async (file) => {
+        const [chosen] = await filesFrom(file);
+        await useBiosImage(new Uint8Array(await chosen.arrayBuffer()));
+      },
+      onForgetBios: async () => {
+        await biosStore.forget();
+        biosImages = {};
+        applyBios();
+        powerCycle();
       },
       focusScreen,
     });
@@ -302,10 +356,7 @@ async function main(): Promise<void> {
       onConsole: () => {
         // Games look at the console they are on when they start, so a change means switching off and on.
         applySetup();
-        machine.powerOn();
-        emulator.resetTiming();
-        audio?.flush();
-        updateStatus();
+        powerCycle();
       },
       onSaveState: async () => {
         const session = currentSession();
@@ -421,6 +472,8 @@ async function main(): Promise<void> {
     };
 
     applySetup();
+    applyBios();
+    machine.powerOn();
     cartPanel.showEmpty();
     updateCanSave();
     updateStatus();

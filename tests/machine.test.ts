@@ -102,6 +102,51 @@ describe('the console', () => {
   });
 });
 
+describe('booting through a BIOS', () => {
+  /**
+   * A BIOS that copies a stub into RAM and runs it there: the stub writes
+   * `memoryControl` to port $3E (switching the BIOS off and the game on) and
+   * jumps to the game, as the real ones do once they've checked it.
+   */
+  function biosThatStarts(memoryControl: number, size: number): Uint8Array {
+    const stub = [...ld_a(memoryControl), ...out(0x3e), 0xc3, 0x00, 0x00];
+    const bios = new Uint8Array(size);
+    bios.set([0x21, 0x0e, 0x00, 0x11, 0x00, 0xc1, 0x01, stub.length, 0x00, 0xed, 0xb0, 0xc3, 0x00, 0xc1, ...stub]);
+    return bios;
+  }
+
+  it('starts in the Master System BIOS, which hands over to the game', () => {
+    const machine = machineWith(counter);
+    machine.setBios(biosThatStarts(0xab, 0x2000), null);
+    machine.powerOn();
+    expect(machine.bus.read(0x0000)).toBe(0x21);
+    for (let frame = 0; frame < 30; frame++) machine.runFrame();
+    expect(machine.bus.memoryControl).toBe(0xab);
+    expect(machine.bus.read(0x0000)).toBe(counter[0]);
+    expect(machine.bus.ram[1]).toBeGreaterThan(25);
+  });
+
+  it('runs the BIOS with no cartridge in', () => {
+    const machine = machineWith(counter);
+    machine.insertCartridge(null);
+    expect(machine.canRun).toBe(false);
+    machine.setBios(biosThatStarts(0xe3, 0x2000), null);
+    expect(machine.canRun).toBe(true);
+  });
+
+  it('starts in the Game Gear BIOS, which covers the first 1K until it switches off', () => {
+    const machine = machineWith(counter);
+    machine.setSystem('gg');
+    machine.setBios(null, biosThatStarts(0x08, 0x400));
+    machine.powerOn();
+    expect(machine.bus.read(0x0000)).toBe(0x21);
+    expect(machine.bus.read(0x0400)).toBe(counter[0x400]);
+    for (let frame = 0; frame < 30; frame++) machine.runFrame();
+    expect(machine.bus.read(0x0000)).toBe(counter[0]);
+    expect(machine.bus.ram[1]).toBeGreaterThan(25);
+  });
+});
+
 describe('save states', () => {
   it('restores the machine where it was', async () => {
     const machine = machineWith(counter);

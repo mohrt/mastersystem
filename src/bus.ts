@@ -11,7 +11,11 @@ const OPEN_BUS = 0xff;
 /** Port $3E bits that switch memory off. The BIOS leaves $AB: cartridge and RAM on, BIOS, card and expansion off. */
 const CARTRIDGE_OFF = 0x40;
 const RAM_OFF = 0x10;
+const BIOS_OFF = 0x08;
 const BIOS_MEMORY_CONTROL = 0xab;
+/** At power on only the BIOS (with RAM and the I/O chip) is switched on; it looks for a game and switches to it. */
+const POWER_ON_MEMORY_CONTROL = 0xe3;
+const GG_BIOS_SIZE = 0x400;
 
 /** Port $3F: bits 0-3 set a pin as an input (TR A, TH A, TR B, TH B); bits 4-7 are the levels output on them. */
 const TR_A_INPUT = 0x01;
@@ -28,7 +32,9 @@ const GG_SERIAL_PORTS = [0x7f, 0xff, 0x00, 0xff, 0x00];
  *
  * Memory: the cartridge at $0000-$BFFF, through its mapper; 8K of RAM at
  * $C000-$DFFF, repeated at $E000-$FFFF. Writes to $FFFC-$FFFF also go to
- * Sega's mapper.
+ * Sega's mapper. The Master System's BIOS sits in the same space as the
+ * cartridge (with a mapper of its own), and port $3E picks which is on. The
+ * Game Gear's 1K BIOS covers the cartridge's first 1K until it switches off.
  *
  * I/O: address lines A7, A6 and A0 pick the device. $3E (memory control) and
  * $3F (I/O control) for A7 A6 = 00; the V and H counters (reads) or the sound
@@ -40,6 +46,10 @@ const GG_SERIAL_PORTS = [0x7f, 0xff, 0x00, 0xff, 0x00];
 export class SmsBus implements Z80Bus {
   readonly ram = new Uint8Array(RAM_SIZE);
   cartridge: Cartridge | null = null;
+  /** The Master System's BIOS, wired like a cartridge; null starts games directly. */
+  bios: Cartridge | null = null;
+  /** The Game Gear's BIOS (1K); null starts games directly. */
+  ggBios: Uint8Array | null = null;
   system: System = 'sms';
   region: Region = 'export';
   pal = false;
@@ -64,7 +74,7 @@ export class SmsBus implements Z80Bus {
   ) {}
 
   reset(): void {
-    this.memoryControl = BIOS_MEMORY_CONTROL;
+    this.memoryControl = this.hasBios ? POWER_ON_MEMORY_CONTROL : BIOS_MEMORY_CONTROL;
     this.ioControl = 0xff;
     this.fmControl = 0;
     this.hCounterLatch = 0;
@@ -74,23 +84,44 @@ export class SmsBus implements Z80Bus {
     return this.system !== 'sms';
   }
 
-  /** Port $3E can switch the cartridge slot (bit 6) and work RAM (bit 4) off; the Game Gear has no such port. */
+  /** Whether this console has a BIOS to start from. */
+  get hasBios(): boolean {
+    return this.gameGear ? this.ggBios !== null : this.bios !== null;
+  }
+
+  /**
+   * Port $3E can switch the cartridge slot (bit 6), work RAM (bit 4) and
+   * BIOS (bit 3) off. The Game Gear only has the BIOS switch.
+   */
   private enabled(bit: number): boolean {
-    return this.system !== 'sms' || (this.memoryControl & bit) === 0;
+    if (this.gameGear && bit !== BIOS_OFF) return true;
+    return (this.memoryControl & bit) === 0;
   }
 
   read(address: number): number {
-    if (address < 0xc000) return this.cartridge && this.enabled(CARTRIDGE_OFF) ? this.cartridge.read(address) : OPEN_BUS;
-    return this.enabled(RAM_OFF) ? this.ram[address & (RAM_SIZE - 1)] : OPEN_BUS;
+    if (address >= 0xc000) return this.enabled(RAM_OFF) ? this.ram[address & (RAM_SIZE - 1)] : OPEN_BUS;
+    if (this.gameGear) {
+      if (this.ggBios && address < GG_BIOS_SIZE && this.enabled(BIOS_OFF)) return this.ggBios[address];
+      return this.cartridge ? this.cartridge.read(address) : OPEN_BUS;
+    }
+    // With both on, the two drive the bus at once and zeros win.
+    let value = OPEN_BUS;
+    if (this.bios && this.enabled(BIOS_OFF)) value &= this.bios.read(address);
+    if (this.cartridge && this.enabled(CARTRIDGE_OFF)) value &= this.cartridge.read(address);
+    return value;
   }
 
   write(address: number, value: number): void {
     if (address < 0xc000) {
       if (this.enabled(CARTRIDGE_OFF)) this.cartridge?.write(address, value);
+      if (!this.gameGear && this.enabled(BIOS_OFF)) this.bios?.write(address, value);
       return;
     }
     if (this.enabled(RAM_OFF)) this.ram[address & (RAM_SIZE - 1)] = value;
-    if (address >= 0xfffc) this.cartridge?.writeRegister(address, value);
+    if (address >= 0xfffc) {
+      this.cartridge?.writeRegister(address, value);
+      if (!this.gameGear) this.bios?.writeRegister(address, value);
+    }
   }
 
   input(port: number): number {

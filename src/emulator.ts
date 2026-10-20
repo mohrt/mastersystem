@@ -18,7 +18,7 @@ export class Emulator {
   }
 
   get canRun(): boolean {
-    return this.machine.cartridge !== null;
+    return this.machine.canRun;
   }
 
   setAudioRate(rate: number): void {

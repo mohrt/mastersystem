@@ -27,8 +27,8 @@ export class MemoryStore<T> implements KeyValueStore<T> {
 }
 
 const DATABASE_NAME = 'mastersystem-emulator';
-const DATABASE_VERSION = 1;
-export const STORE_NAMES = ['saveStates', 'battery'] as const;
+const DATABASE_VERSION = 2;
+export const STORE_NAMES = ['saveStates', 'battery', 'bios'] as const;
 export type StoreName = (typeof STORE_NAMES)[number];
 
 function request<T>(req: IDBRequest<T>): Promise<T> {
@@ -87,5 +87,5 @@ export async function openBrowserStores(): Promise<Record<StoreName, KeyValueSto
 
 /** In-memory stores, used when the browser has no IndexedDB (and in tests). */
 export function memoryStores(): Record<StoreName, KeyValueStore<unknown>> {
-  return { saveStates: new MemoryStore(), battery: new MemoryStore() };
+  return { saveStates: new MemoryStore(), battery: new MemoryStore(), bios: new MemoryStore() };
 }

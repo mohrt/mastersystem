@@ -1,5 +1,5 @@
 import { SmsBus } from './bus';
-import type { Cartridge } from './cart/cartridge';
+import { Cartridge } from './cart/cartridge';
 import type { Region, System, TvSystem } from './cart/detect';
 import { Z80 } from './cpu/z80';
 import { Controllers } from './io/controllers';
@@ -19,6 +19,16 @@ const RESET_HOLD_FRAMES = 6;
 const BIOS_STACK = 0xdff0;
 /** The BIOS leaves its last port $3E value in the first byte of RAM; a few games look. */
 const BIOS_MEMORY_CONTROL = 0xab;
+/** Small BIOSes repeat through the first 48K, as their chips are only partly decoded. */
+const UNMAPPED_SIZE = 0xc000;
+
+/** The Master System's BIOS as the bus sees it: a cartridge, with Sega's mapper when it is too big for 48K. */
+function biosCartridge(bios: Uint8Array): Cartridge {
+  if (bios.length > 0x8000) return new Cartridge(bios, 'sega');
+  const mirrored = new Uint8Array(UNMAPPED_SIZE);
+  for (let offset = 0; offset < UNMAPPED_SIZE; offset += bios.length) mirrored.set(bios.subarray(0, UNMAPPED_SIZE - offset), offset);
+  return new Cartridge(mirrored, 'none');
+}
 
 /**
  * The whole console: Z80, the video chip (with the PSG in it), 8K of RAM, two
@@ -64,6 +74,25 @@ export class MasterSystem {
     return this.bus.cartridge;
   }
 
+  /**
+   * Fits BIOS images (null for none): the Master System's and the Game
+   * Gear's. With one, the console starts in it, as the real one does; it
+   * checks the game and starts it. Takes effect at the next power on.
+   */
+  setBios(sms: Uint8Array | null, gg: Uint8Array | null): void {
+    this.bus.bios = sms ? biosCartridge(sms) : null;
+    this.bus.ggBios = gg;
+  }
+
+  get hasBios(): boolean {
+    return this.bus.hasBios;
+  }
+
+  /** A console with a BIOS can be switched on with no cartridge in; one without has nothing to run. */
+  get canRun(): boolean {
+    return this.cartridge !== null || this.hasBios;
+  }
+
   /** Changing cartridges means switching off first. */
   insertCartridge(cartridge: Cartridge | null): void {
     this.bus.cartridge = cartridge;
@@ -97,11 +126,12 @@ export class MasterSystem {
     return this.bus.fmPresent;
   }
 
-  /** Power on: everything back to its initial state, RAM cleared. Starts the game as the BIOS would. */
+  /** Power on: everything back to its initial state, RAM cleared. Without a BIOS, starts the game as the BIOS would. */
   powerOn(): void {
     this.bus.ram.fill(0);
-    this.bus.ram[0] = BIOS_MEMORY_CONTROL;
+    if (!this.hasBios) this.bus.ram[0] = BIOS_MEMORY_CONTROL;
     this.cartridge?.reset();
+    this.bus.bios?.reset();
     this.restart();
   }
 
@@ -112,8 +142,10 @@ export class MasterSystem {
     this.fm.reset();
     this.bus.reset();
     this.cpu.reset();
-    this.cpu.sp = BIOS_STACK;
-    this.cpu.im = 1;
+    if (!this.hasBios) {
+      this.cpu.sp = BIOS_STACK;
+      this.cpu.im = 1;
+    }
     this.cpu.irq = false;
     this.overrun = 0;
     this.resetFrames = 0;
@@ -126,7 +158,7 @@ export class MasterSystem {
    * none, the console restarts instead.
    */
   pressReset(): void {
-    if (!this.cartridge) return;
+    if (!this.canRun) return;
     if (this.system === 'sms') {
       this.resetFrames = RESET_HOLD_FRAMES;
       this.bus.resetHeld = true;

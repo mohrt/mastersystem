@@ -18,6 +18,9 @@ export interface CartPanelCallbacks {
   onExportSave(): void;
   /** 'auto' for the detected mapper. */
   onMapper(mapper: MapperKind | 'auto'): void;
+  /** A BIOS image was chosen (or a zip with one in). */
+  onBiosFile(file: File): Promise<void>;
+  onForgetBios(): Promise<void>;
   focusScreen(): void;
 }
 
@@ -76,6 +79,16 @@ export class CartPanel {
       this.callbacks.onExportSave();
       this.callbacks.focusScreen();
     });
+    const biosInput = requireChild<HTMLInputElement>(root, 'input[name="bios-file"]');
+    requireChild<HTMLButtonElement>(root, '[data-action="choose-bios"]').addEventListener('click', () => biosInput.click());
+    biosInput.addEventListener('change', () => {
+      const file = biosInput.files?.[0];
+      biosInput.value = '';
+      if (file) this.run(() => this.callbacks.onBiosFile(file));
+    });
+    requireChild<HTMLButtonElement>(root, '[data-action="forget-bios"]').addEventListener('click', () => {
+      if (confirm('Forget the BIOS? Games will start straight away again.')) this.run(() => this.callbacks.onForgetBios());
+    });
     this.attachDragAndDrop();
   }
 
@@ -124,6 +137,13 @@ export class CartPanel {
     requireChild(this.root, '.cart-file').textContent = fileLabel === title ? '' : `(${fileLabel})`;
     requireChild(this.root, '.cart-details').textContent = details;
     requireChild<HTMLElement>(this.root, '.battery-actions').hidden = !hasBattery;
+  }
+
+  /** Shows which BIOS images are kept (e.g. "Master System BIOS (8K)"), or that there are none. */
+  showBios(description: string | null): void {
+    requireChild(this.root, '.bios-status').textContent = description ?? 'No BIOS: games start straight away';
+    requireChild<HTMLButtonElement>(this.root, '[data-action="forget-bios"]').hidden = description === null;
+    requireChild<HTMLInputElement>(this.root, 'input[name="use-bios"]').disabled = description === null;
   }
 
   /** Master System cartridges don't say whether they save, so the save buttons appear once the game uses its RAM. */

@@ -31,8 +31,12 @@ type TypedArray =
   | Float32Array
   | Float64Array;
 
-/** Fields that are never part of a save state (ROM contents, scratch buffers, physical inputs). */
-const SKIPPED_FIELDS = new Set(['rom', 'framebuffer', 'buffer', 'lineBuffer', 'priority', 'spriteLine', 'inputs']);
+/**
+ * Fields that are never part of a save state: ROM contents (and the BIOS, which
+ * the player supplies and may not have when the state is loaded), scratch
+ * buffers, and physical inputs.
+ */
+const SKIPPED_FIELDS = new Set(['rom', 'bios', 'ggBios', 'framebuffer', 'buffer', 'lineBuffer', 'priority', 'spriteLine', 'inputs']);
 
 const isTyped = (value: unknown): value is TypedArray => ArrayBuffer.isView(value) && !(value instanceof DataView);
 

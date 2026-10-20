@@ -2,7 +2,7 @@
 
 **Play it at [mohrt.github.io/mastersystem](https://mohrt.github.io/mastersystem/)**
 
-A Sega Master System and Game Gear emulator written from scratch in TypeScript: a Z80 with every documented and undocumented instruction (it passes ZEXDOC and ZEXALL), Sega's video chip with mode 4 (scrolling, line interrupts, the 224- and 240-line modes) and the TMS9918A modes it kept, the PSG in it with the Game Gear's stereo, the YM2413 FM chip of Japanese consoles, and the Sega, Codemasters and Korean mappers. Drop a `.sms` or `.gg` file (or a `.zip` containing one) onto the page to play it. No BIOS is needed: games start as the BIOS would leave them.
+A Sega Master System and Game Gear emulator written from scratch in TypeScript: a Z80 with every documented and undocumented instruction (it passes ZEXDOC and ZEXALL), Sega's video chip with mode 4 (scrolling, line interrupts, the 224- and 240-line modes) and the TMS9918A modes it kept, the PSG in it with the Game Gear's stereo, the YM2413 FM chip of Japanese consoles, and the Sega, Codemasters and Korean mappers. Drop a `.sms` or `.gg` file (or a `.zip` containing one) onto the page to play it. No BIOS is needed: games start as the BIOS would leave them, though you can add your own (see below).
 
 sverx's SMS Test Suite identifies it as a Master System II, sees the region and TV system it is set to, and finds the FM chip on a Japanese console.
 
@@ -24,6 +24,10 @@ The toolbar has pause, the console's Reset button (games that use it restart; a 
 Changing the setup switches the console off and on, as games look at it when they start. **Hide left column** crops the leftmost 8 pixels, where some scrolling games leave junk. Save states keep the whole console, cartridge included, in the browser. They can be exported and imported as `.smsstate` files.
 
 Games that save to their cartridge (battery-backed RAM, as in Phantasy Star) save in the browser by themselves. **Download .sav** appears once a game has used its cartridge RAM, and dropping a `.sav` file onto the page while its game is in uses it.
+
+## The BIOS
+
+The consoles' BIOS ROMs are still under copyright, so none is included, and none is needed. If you have your own, **Add BIOS...** (or drop a file with "bios" in its name) keeps it in the browser: a Master System BIOS (8K or more) or the Game Gear's (1K). With **Start through the BIOS** ticked, the console starts in it as the real one does: it shows its logo, checks the game, and starts it. Export Master System BIOSes refuse games without a valid Sega header, as on the real console. A Master System with a BIOS also switches on with no cartridge in. **Forget** removes the BIOS images.
 
 ## Cartridges
 

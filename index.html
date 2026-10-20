@@ -100,9 +100,22 @@
           </p>
           <p class="game-info"></p>
         </div>
+        <p class="bios-row">
+          <label
+            title="Start through the console's own BIOS, as the real one does: it shows its logo and checks the game first"
+          >
+            <input type="checkbox" name="use-bios" checked /> Start through the BIOS
+          </label>
+          <span class="bios-status">No BIOS</span>
+          <button type="button" data-action="choose-bios" title="Your own Master System or Game Gear BIOS image">
+            Add BIOS...
+          </button>
+          <button type="button" data-action="forget-bios" hidden>Forget</button>
+        </p>
         <p class="cart-drop-hint">Release to insert</p>
         <p class="cart-message" role="status"></p>
         <input type="file" name="cart-file" accept=".sms,.gg,.sg,.sc,.bin,.rom,.zip,.smsstate,.sav" hidden />
+        <input type="file" name="bios-file" accept=".sms,.gg,.bin,.rom,.zip" hidden />
       </section>
 
       <section id="controls" class="controls" aria-label="Controllers">

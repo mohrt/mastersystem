@@ -285,6 +285,27 @@ input[type='range'] {
   color: #aaa;
 }
 
+.bios-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+  margin-top: 0.75rem !important;
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+.bios-row label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.bios-status {
+  color: #888;
+}
+
 .game-info {
   margin-top: 0.35rem !important;
   font-size: 0.8rem;
