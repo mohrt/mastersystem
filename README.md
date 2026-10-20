@@ -1,4 +1,4 @@
-# Master System in the browser
+# Sega Master System in the browser
 
 **Play it at [mohrt.github.io/mastersystem](https://mohrt.github.io/mastersystem/)**
 
