@@ -54,6 +54,124 @@
       "licenseFile": "https://raw.githubusercontent.com/liamhays/tunnel/79c0c21dffbed69c8be0acbebf70a1cbb36cadaa/LICENSE",
       "sourceUrl": "https://github.com/liamhays/tunnel",
       "hint": "A small arcade game for the Game Gear. Enter is Start."
+    },
+    {
+      "title": "Balloon Master",
+      "file": "balloon-master.sms",
+      "url": "https://github.com/joergsf4/balloon-master/releases/download/v0.2.2-beta/balloon-master-beta.sms",
+      "sha256": "25ff474107fdfb879b11a65c696a4e29c31b1a8f4ca9939ef52ac1e54429ae13",
+      "credit": "Retro Computer Dresden e.V. and contributors",
+      "license": "MIT",
+      "licenseFile": "https://raw.githubusercontent.com/joergsf4/balloon-master/98488f2f85f5c69ba6176398a95a272a1cda92fe/LICENSE",
+      "sourceUrl": "https://github.com/joergsf4/balloon-master",
+      "hint": "Steer a hot-air balloon through six worlds: button 1 fires the burner, button 2 lowers the hook for fuel."
+    },
+    {
+      "title": "Data Storm",
+      "file": "data-storm.sms",
+      "url": "https://github.com/haroldo-ok/datastorm/releases/download/v1.00/DataStorm-SMS-1.00.zip",
+      "zipEntry": "datastorm.sms",
+      "sha256": "4b0fc42c8ab3d6d073dbc0f902b0fe35709e804613740ab52cb122bdb5082d4f",
+      "credit": "haroldo-ok, after the Atari 2600's Turmoil",
+      "license": "Apache 2.0",
+      "licenseFile": "https://raw.githubusercontent.com/haroldo-ok/datastorm/27ef415096f9b6e9f9c3bdff3d21def0c3515536/LICENSE",
+      "sourceUrl": "https://github.com/haroldo-ok/datastorm",
+      "hint": "A fast shooter: ride the centre alley and blast the aliens racing along the lanes."
+    },
+    {
+      "title": "Dragon Blaster",
+      "file": "dragon-blaster.sms",
+      "url": "https://github.com/haroldo-ok/dragon-blaster/releases/download/v0.11/dragon_blaster-0.11.sms.zip",
+      "zipEntry": "dragon_blaster.sms",
+      "sha256": "507a6c14080c1c9968a0bb455cf5980740e06c5faee939814d36d52f5ecd887f",
+      "credit": "haroldo-ok (art from OpenGameArt, credited in the source)",
+      "license": "MIT, art CC BY and CC BY-SA",
+      "licenseFile": "https://raw.githubusercontent.com/haroldo-ok/dragon-blaster/5b48f0570aeb855cda6ae2a23f48c993b77e2a3e/LICENSE",
+      "sourceUrl": "https://github.com/haroldo-ok/dragon-blaster",
+      "hint": "A vertical shooter starring a dragon, with a dracolich boss."
+    },
+    {
+      "title": "Duckslayer Adventures",
+      "file": "duckslayer-adventures.sms",
+      "url": "https://github.com/haroldo-ok/duckslayer-adventures/releases/download/v0.6.0/Duckslayer.Adventures.0.6.0.zip",
+      "zipEntry": "duckslayer-adventures.sms",
+      "sha256": "de1a739053ae237ad4c780dd1c81edb316f2eda15061b124df8b21b45740ea28",
+      "credit": "haroldo-ok, after the Atari 2600's Adventure",
+      "license": "Apache 2.0",
+      "licenseFile": "https://raw.githubusercontent.com/haroldo-ok/duckslayer-adventures/7ddffba689b7f2a1d6dfadc619f70bd6e490297a/LICENSE",
+      "sourceUrl": "https://github.com/haroldo-ok/duckslayer-adventures",
+      "hint": "Take the chalice from the black castle, past the duck dragons, back to the yellow one."
+    },
+    {
+      "title": "Food Fighter",
+      "file": "food-fighter.sms",
+      "url": "https://github.com/haroldo-ok/food-fighter/releases/download/v0.4/food_fighter-0.4.sms.zip",
+      "zipEntry": "food_fighter-0.4.sms",
+      "sha256": "37c0931bbec9d902be3a59403086a4e3164b61797a677c29c8348d4ae81dcbfa",
+      "credit": "haroldo-ok (art from OpenGameArt, credited in the source)",
+      "license": "MIT, art CC0",
+      "licenseFile": "https://raw.githubusercontent.com/haroldo-ok/food-fighter/48fe2ea967952fb233f148c44ed48f66a01fb567/LICENSE",
+      "sourceUrl": "https://github.com/haroldo-ok/food-fighter",
+      "hint": "A shooter where waves of food come at you."
+    },
+    {
+      "title": "Rassak's Retribution",
+      "file": "rassaks-retribution.sms",
+      "url": "https://raw.githubusercontent.com/haroldo-ok/rassaks-retribution/9ddd40be521d6827e39709c710083746d5cf5f09/desktop/rassaks_retribution-0.3.sms",
+      "sha256": "b9b6979ddafedc2c82ac8e0a0bd14e275b494fa5f649712bcf2c2292f3956ee8",
+      "credit": "haroldo-ok, after the Atari 2600's Yars' Revenge (art from OpenGameArt, credited in the source)",
+      "license": "MIT, art OGA-BY and CC0",
+      "licenseFile": "https://raw.githubusercontent.com/haroldo-ok/rassaks-retribution/9ddd40be521d6827e39709c710083746d5cf5f09/LICENSE",
+      "sourceUrl": "https://github.com/haroldo-ok/rassaks-retribution",
+      "hint": "Fly as an insect and destroy the enemy base. Still being made."
+    },
+    {
+      "title": "River Strike",
+      "file": "river-strike.sms",
+      "url": "https://github.com/haroldo-ok/river-strike/releases/download/v0.10/river_strike.0.10.sms.zip",
+      "zipEntry": "river_strike.0.10.sms",
+      "sha256": "d2c7bd120a2e31612144562b15ac3ae73225efb6307332e2a78c45e1bc9fccac",
+      "credit": "haroldo-ok, after River Raid (art from OpenGameArt, credited in the source)",
+      "license": "MIT, art CC BY and CC0",
+      "licenseFile": "https://raw.githubusercontent.com/haroldo-ok/river-strike/acfcc478c14ea81a00fb421d77f73f9787a0c5be/LICENSE",
+      "sourceUrl": "https://github.com/haroldo-ok/river-strike",
+      "hint": "Fly up the river, shoot the boats and helicopters, and keep your fuel up."
+    },
+    {
+      "title": "SMS Rogue",
+      "file": "sms-rogue.sms",
+      "url": "https://github.com/haroldo-ok/sms-rogue/releases/download/v0.8.0/sms-rogue-0.8.0.zip",
+      "zipEntry": "sms-rogue-0.8.0.sms",
+      "sha256": "f3838505f25ae11efdb7c2e056cf21b1c3082081742c11ddce2c061372a6edb3",
+      "credit": "haroldo-ok",
+      "license": "Public domain (Unlicense)",
+      "licenseFile": "https://raw.githubusercontent.com/haroldo-ok/sms-rogue/329d788feb01a54d0b1ac0d4f34ecc98f8810e42/UNLICENSE",
+      "sourceUrl": "https://github.com/haroldo-ok/sms-rogue",
+      "hint": "A very simple roguelike: explore the dungeon and fight the monsters."
+    },
+    {
+      "title": "Stalactites",
+      "file": "stalactites.sms",
+      "url": "https://github.com/haroldo-ok/stalactites-sms/releases/download/v0.6/stalactites-0.6.sms.zip",
+      "zipEntry": "stalactites-0.6.sms",
+      "sha256": "7dc67816bd9a39c43b4dc0230d194f51ac1dbdb002d6863458e8a291d8d54f73",
+      "credit": "haroldo-ok, after Thomas Jentzsch's StalaX (art from OpenGameArt, credited in the source)",
+      "license": "MIT, art CC BY and CC0",
+      "licenseFile": "https://raw.githubusercontent.com/haroldo-ok/stalactites-sms/e3064b0bc6a01aea9bc7c4d1bcb07e7f727c139d/LICENSE",
+      "sourceUrl": "https://github.com/haroldo-ok/stalactites-sms",
+      "hint": "Shoot back the growing stalactites and their drips. Button 1 moves faster, button 2 is the Mega Bomb."
+    },
+    {
+      "title": "Sub Rescue",
+      "file": "sub-rescue.sms",
+      "url": "https://github.com/haroldo-ok/sub-rescue/releases/download/v0.3/sub_rescue-0.3.zip",
+      "zipEntry": "sub_rescue-0.3.sms",
+      "sha256": "5d8013936eab3390826692f8fcc974e08e535371a97c47953b8d003b76866741",
+      "credit": "haroldo-ok, after the Atari 2600's Seaquest",
+      "license": "MIT",
+      "licenseFile": "https://raw.githubusercontent.com/haroldo-ok/sub-rescue/73046a119833cc8b6a4567a7099508949e753b98/LICENSE",
+      "sourceUrl": "https://github.com/haroldo-ok/sub-rescue",
+      "hint": "Rescue six divers, dodge the sharks and subs, and surface before your oxygen runs out."
     }
   ]
 }
