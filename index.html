@@ -13,6 +13,58 @@
         <canvas id="screen" width="256" height="192" tabindex="0" aria-label="Sega Master System screen"></canvas>
         <p class="paused-label">Paused</p>
         <p class="empty-label">Insert a cartridge to switch on</p>
+        <section id="bios-setup" class="bios-setup" aria-labelledby="bios-setup-title" hidden>
+          <h1 id="bios-setup-title">Master System and Game Gear BIOS</h1>
+          <p class="bios-setup-lead">
+            None is needed: games start as the BIOS would leave them. With one, the console starts in it as the real one
+            does: it shows its logo, checks the game, and starts it. The BIOS ROMs are still under copyright, so none is
+            included here: choose or drop your own BIOS image file. Yours stay in this browser and are never sent
+            anywhere.
+          </p>
+          <ul class="bios-list">
+            <li class="bios-rom" data-kind="sms" data-state="missing">
+              <p class="bios-rom-heading"><strong>Master System BIOS</strong> <span class="bios-need">Optional</span></p>
+              <p class="bios-rom-detail">
+                8K or more: the plain ones are 8K, those with a game built in bigger. Export Master System BIOSes refuse
+                games without a valid Sega header, as on the real console. A Master System with a BIOS also switches on
+                with no cartridge in.
+              </p>
+              <p class="bios-rom-names">
+                Often named <code>bios.sms</code> or <code>[BIOS] Sega Master System (USA, Europe) (v1.3).sms</code>
+              </p>
+              <p class="bios-rom-status"></p>
+            </li>
+            <li class="bios-rom" data-kind="gg" data-state="missing">
+              <p class="bios-rom-heading"><strong>Game Gear BIOS</strong> <span class="bios-need">Optional</span></p>
+              <p class="bios-rom-detail">Exactly 1K (1,024 bytes).</p>
+              <p class="bios-rom-names">Often named <code>bios.gg</code></p>
+              <p class="bios-rom-status"></p>
+            </li>
+          </ul>
+          <p class="bios-use">
+            <label
+              title="Start through the console's own BIOS, as the real one does: it shows its logo and checks the game first"
+            >
+              <input type="checkbox" name="use-bios" checked /> Start through the BIOS
+            </label>
+          </p>
+          <p class="bios-tip">
+            The retrobios collection keeps <code>bios.sms</code> in its
+            <a href="https://github.com/Abdess/retrobios/tree/main/bios/Sega/Master%20System" target="_blank" rel="noopener"><code>Master System</code></a>
+            folder and <code>bios.gg</code> in its
+            <a href="https://github.com/Abdess/retrobios/tree/main/bios/Sega/Game%20Gear" target="_blank" rel="noopener"><code>Game Gear</code></a>
+            folder.
+          </p>
+          <div class="bios-actions">
+            <button type="button" class="primary" data-action="choose-bios-file">Choose BIOS file...</button>
+            <button type="button" data-action="forget-bios" hidden>Forget</button>
+            <button type="button" data-action="back">Back to the console</button>
+          </div>
+          <p class="bios-setup-message" role="alert"></p>
+          <p class="bios-storage-note"></p>
+          <p class="bios-drop-hint">Release to load the BIOS</p>
+          <input type="file" name="bios-file" accept=".sms,.gg,.bin,.rom,.zip" hidden />
+        </section>
       </div>
 
       <section id="toolbar" class="toolbar" aria-label="Console">
@@ -27,6 +79,13 @@
           </button>
           <button type="button" data-action="power" title="Switch the console off and on again">Power cycle</button>
           <button type="button" data-action="fullscreen" title="Esc leaves full screen">Full screen</button>
+          <button
+            type="button"
+            data-action="change-bios"
+            title="Add, check or forget the consoles' BIOS images; none is needed"
+          >
+            BIOS...
+          </button>
         </span>
         <span class="toolbar-group">
           <select name="system" aria-label="Console" title="Auto goes by the cartridge's header and file name">
@@ -100,29 +159,9 @@
           </p>
           <p class="game-info"></p>
         </div>
-        <p class="bios-row">
-          <label
-            title="Start through the console's own BIOS, as the real one does: it shows its logo and checks the game first"
-          >
-            <input type="checkbox" name="use-bios" checked /> Start through the BIOS
-          </label>
-          <span class="bios-status">No BIOS</span>
-          <button type="button" data-action="choose-bios" title="Your own Master System or Game Gear BIOS image">
-            Add BIOS...
-          </button>
-          <button type="button" data-action="forget-bios" hidden>Forget</button>
-        </p>
-        <p class="bios-source">
-          The retrobios collection keeps <code>bios.sms</code> in its
-          <a href="https://github.com/Abdess/retrobios/tree/main/bios/Sega/Master%20System" target="_blank" rel="noopener"><code>Master System</code></a>
-          folder and <code>bios.gg</code> in its
-          <a href="https://github.com/Abdess/retrobios/tree/main/bios/Sega/Game%20Gear" target="_blank" rel="noopener"><code>Game Gear</code></a>
-          folder.
-        </p>
         <p class="cart-drop-hint">Release to insert</p>
         <p class="cart-message" role="status"></p>
         <input type="file" name="cart-file" accept=".sms,.gg,.sg,.sc,.bin,.rom,.zip,.smsstate,.sav" hidden />
-        <input type="file" name="bios-file" accept=".sms,.gg,.bin,.rom,.zip" hidden />
       </section>
 
       <section id="controls" class="controls" aria-label="Controllers">

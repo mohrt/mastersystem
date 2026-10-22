@@ -11,6 +11,7 @@ import { BatterySaves, batteryKey } from './storage/battery-saves';
 import { BIOS_NAMES, BiosStore, biosKind, looksLikeBios, type BiosKind } from './storage/bios-store';
 import { SaveStates, decodeSession, encodeSession, type SaveStateRecord, type Session } from './storage/save-states';
 import { memoryStores, openBrowserStores, type KeyValueStore } from './storage/store';
+import { askForBios } from './ui/bios-setup';
 import { CartPanel } from './ui/cart-panel';
 import { downloadFile } from './ui/download';
 import { Settings } from './ui/settings';
@@ -71,13 +72,6 @@ function setupFor(choices: ConsoleChoices, info: RomInfo | null): ConsoleSetup {
   return { system, region, tv, fm };
 }
 
-/** The BIOS images kept, e.g. "Master System BIOS (8K) and Game Gear BIOS (1K)", or null for none. */
-function describeBios(images: Partial<Record<BiosKind, Uint8Array>>): string | null {
-  const kept = (Object.keys(BIOS_NAMES) as BiosKind[]).filter((kind) => images[kind]);
-  if (kept.length === 0) return null;
-  return kept.map((kind) => `${BIOS_NAMES[kind]} (${sizeLabel(images[kind]!.length)})`).join(' and ');
-}
-
 /** One line about the cartridge, e.g. "256K · Sega mapper · Game Gear · Japanese". */
 function describe(cart: CurrentCartridge): string {
   const { info } = cart;
@@ -92,6 +86,7 @@ async function main(): Promise<void> {
   const canvas = requireElement<HTMLCanvasElement>('#screen');
   const status = requireElement<HTMLParagraphElement>('#status');
   const screenFrame = requireElement<HTMLElement>('.screen-frame');
+  const biosSetup = requireElement<HTMLElement>('#bios-setup');
 
   try {
     const settings = new Settings();
@@ -113,6 +108,8 @@ async function main(): Promise<void> {
 
     const stores = await openBrowserStores().catch((error: unknown) => {
       console.warn('Browser storage is unavailable; saves will last until the page is closed.', error);
+      requireElement<HTMLElement>('.bios-storage-note').textContent =
+        "This browser isn't letting the page store files, so the BIOS will be forgotten when you close it.";
       return memoryStores();
     });
     const saveStates = new SaveStates(stores.saveStates as KeyValueStore<SaveStateRecord>);
@@ -123,6 +120,8 @@ async function main(): Promise<void> {
     let current: CurrentCartridge | null = null;
     let bundledGames: BundledGame[] = [];
     let paused = false;
+    /** While the BIOS setup is shown in place of the screen. */
+    let choosingBios = false;
     const focusScreen = () => canvas.focus();
 
     const updateStatus = () => {
@@ -147,20 +146,36 @@ async function main(): Promise<void> {
     const applyBios = () => {
       const on = useBios.checked;
       machine.setBios(on ? (biosImages.sms ?? null) : null, on ? (biosImages.gg ?? null) : null);
-      cartPanel.showBios(describeBios(biosImages));
     };
     useBios.addEventListener('change', () => {
       applyBios();
       powerCycle();
       focusScreen();
     });
-    const useBiosImage = async (bytes: Uint8Array) => {
+    const useBiosImage = async (bytes: Uint8Array): Promise<BiosKind> => {
       const kind = biosKind(bytes);
       await biosStore.save(kind, bytes);
       biosImages = { ...biosImages, [kind]: bytes };
       useBios.checked = true;
       useBios.dispatchEvent(new Event('change'));
-      cartPanel.showMessage(`${BIOS_NAMES[kind]} kept in this browser; the console was switched off and on to use it.`, true);
+      return kind;
+    };
+    const forgetBios = async () => {
+      await biosStore.forget();
+      biosImages = {};
+      applyBios();
+      powerCycle();
+    };
+    /** Shows the BIOS setup in place of the (paused) screen until the user goes back. */
+    const openBiosSetup = async () => {
+      if (choosingBios) return;
+      choosingBios = true;
+      audio?.flush();
+      await askForBios(biosSetup, { images: () => biosImages, onBios: useBiosImage, onForget: forgetBios });
+      choosingBios = false;
+      emulator.resetTiming();
+      updateStatus();
+      focusScreen();
     };
 
     /** Sets the console up for the current cartridge and the toolbar's choices. */
@@ -295,7 +310,8 @@ async function main(): Promise<void> {
           return;
         }
         if (looksLikeBios(chosen.name)) {
-          await useBiosImage(media.image);
+          const kind = await useBiosImage(media.image);
+          cartPanel.showMessage(`${BIOS_NAMES[kind]} kept in this browser; the console was switched off and on to use it.`, true);
           return;
         }
         const game = bundledGames.find((entry) => entry.file.split('/').pop() === chosen.name);
@@ -319,16 +335,6 @@ async function main(): Promise<void> {
           cartPanel.showCartridge(current.title, current.fileName, describe(current), current.cartridge.saveData !== null);
           audio?.flush();
         })();
-      },
-      onBiosFile: async (file) => {
-        const [chosen] = await filesFrom(file);
-        await useBiosImage(new Uint8Array(await chosen.arrayBuffer()));
-      },
-      onForgetBios: async () => {
-        await biosStore.forget();
-        biosImages = {};
-        applyBios();
-        powerCycle();
       },
       focusScreen,
     });
@@ -463,13 +469,17 @@ async function main(): Promise<void> {
       const elapsed = Math.min(now - last, MAX_FRAME_MS);
       last = now;
       pollGamepads();
-      if (!paused) {
+      if (!paused && !choosingBios) {
         emulator.run(elapsed);
         audio?.play(emulator.takeAudioSamples());
       }
       screen.present();
       requestAnimationFrame(frame);
     };
+
+    requireElement<HTMLButtonElement>('#toolbar [data-action="change-bios"]').addEventListener('click', () => {
+      void openBiosSetup();
+    });
 
     applySetup();
     applyBios();

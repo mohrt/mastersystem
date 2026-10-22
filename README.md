@@ -27,7 +27,7 @@ Games that save to their cartridge (battery-backed RAM, as in Phantasy Star) sav
 
 ## The BIOS
 
-The consoles' BIOS ROMs are still under copyright, so none is included, and none is needed. If you have your own, **Add BIOS...** (or drop a file with "bios" in its name) keeps it in the browser: a Master System BIOS (8K or more) or the Game Gear's (1K). With **Start through the BIOS** ticked, the console starts in it as the real one does: it shows its logo, checks the game, and starts it. Export Master System BIOSes refuse games without a valid Sega header, as on the real console. A Master System with a BIOS also switches on with no cartridge in. **Forget** removes the BIOS images.
+The consoles' BIOS ROMs are still under copyright, so none is included, and none is needed. If you have your own, the **BIOS...** button in the toolbar pauses the console and shows the BIOS setup in place of the screen: **Choose BIOS file...** (or drop one onto the page while it is open) keeps it in the browser, a Master System BIOS (8K or more) or the Game Gear's (1K). Dropping a file with "bios" in its name onto the page does the same at any time. With **Start through the BIOS** ticked, the console starts in it as the real one does: it shows its logo, checks the game, and starts it. Export Master System BIOSes refuse games without a valid Sega header, as on the real console. A Master System with a BIOS also switches on with no cartridge in. **Forget** removes the BIOS images, and **Back to the console** (or Esc) carries on playing.
 
 ## Cartridges
 
